@@ -31,7 +31,7 @@ class DataQualityOperator(BaseOperator):
             None
         """
 
-        postgres_hook = PostgresHook(self.redshift_conn_id)
+        postgres_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         for table in self.tables:
             records = redshift.get_records("SELECT COUNT(*) FROM {}".format(table)) 
             if len(records) < 1 or len(records[0]) < 1:
