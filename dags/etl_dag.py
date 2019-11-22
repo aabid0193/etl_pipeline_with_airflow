@@ -89,7 +89,6 @@ load_time_dimension_table = LoadDimensionOperator(
     sql_stmt=SqlQueries.time_table_insert
 )
 
-
 data_quality_check = DataQualityOperator(
     task_id=f"data_quality_checks",
     redshift_conn_id="redshift",

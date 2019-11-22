@@ -43,11 +43,11 @@ class StageToRedshiftOperator(BaseOperator):
         self.execution_date = kwargs.get('execution_date')
         
     def execute(self, context):
-        aws = AwsHook(self.aws_conn_id)
+        aws_hook = AwsHook(self.aws_conn_id)
         credentials = aws.get_credentials()
-        redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
-        self.log.info("Deleting data from destination Redshift table")
-        redshift.run("DELETE FROM {}".format(self.table))
+        postgres_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
+        self.log.info("Deleting data from Redshift table")
+        postgres_hook.run(f"DELETE FROM {self.table}")
         self.log.info("Copying data from S3 to Redshift")
         # Backfill a specific date
         if self.execution_date:
@@ -63,7 +63,7 @@ class StageToRedshiftOperator(BaseOperator):
                 self.execution_date
             )
         else:
-            formatted_sql = StageToRedshiftOperator.copy_sql.format(
+            sql_statement = StageToRedshiftOperator.copy_sql.format(
                 self.table, 
                 self.s3_path, 
                 credentials.access_key,
@@ -72,4 +72,4 @@ class StageToRedshiftOperator(BaseOperator):
                 self.data_format,
                 self.execution_date
             )
-        redshift.run(formatted_sql)
+        postgres_hook.run(sql_statement)
