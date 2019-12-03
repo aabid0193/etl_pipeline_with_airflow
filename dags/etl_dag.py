@@ -8,7 +8,7 @@ from helpers import SqlQueries
 
 
 default_args = {
-    'owner': 'udacity',
+    'owner': 'ahmedabid',
     'start_date': datetime(2019, 1, 12),
     'depends_on_past': False,
     'retries': 3,
