@@ -44,14 +44,14 @@ class StageToRedshiftOperator(BaseOperator):
         
     def execute(self, context):
         aws_hook = AwsHook(self.aws_conn_id)
-        credentials = aws.get_credentials()
+        credentials = aws_hook.get_credentials()
         postgres_hook = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         self.log.info("Deleting data from Redshift table")
         postgres_hook.run(f"DELETE FROM {self.table}")
         self.log.info("Copying data from S3 to Redshift")
         # Backfill a specific date
         if self.execution_date:
-            formatted_sql = StageToRedshiftOperator.copy_sql_time.format(
+            sql_statement = StageToRedshiftOperator.copy_sql_time.format(
                 self.table, 
                 self.s3_path, 
                 self.execution_date.strftime("%Y"),
